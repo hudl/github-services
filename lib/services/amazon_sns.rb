@@ -24,7 +24,7 @@ class Service::AmazonSNS < Service
 
   # Create a new SNS object using the AWS Ruby SDK and publish to it.
   # cfg - Configuration hash of key, secret, etc.
-  # json - THe valid JSON payload to send.
+  # json - The valid JSON payload to send.
   #
   # Returns the instantiated Amazon SNS Object
   def publish_to_sns(cfg, json)
@@ -34,6 +34,12 @@ class Service::AmazonSNS < Service
         :access_key_id     => cfg['aws_key'],
         :secret_access_key => cfg['aws_secret']
       })
+
+      if bytesize(json) > 256 * 1024
+        json = generate_json({
+          :error => "Message is to long for SNS",
+          :url => "here url for pull to get data"
+        })
 
       sns.publish({
         :message            => json,
